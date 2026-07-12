@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.tvlauncher">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-
+    <!-- 网络状态权限，用于监听 WiFi 连接变化 -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
