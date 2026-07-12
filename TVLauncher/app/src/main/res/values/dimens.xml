@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 状态栏与文字尺寸 -->
+    <dimen name="status_bar_height">60dp</dimen>
+    <dimen name="text_size_status_time">25sp</dimen>
+    <dimen name="text_size_status_date">25sp</dimen>
+
+    <!-- 卡片样式尺寸 -->
+    <dimen name="app_card_corner_radius">16dp</dimen>
+    <dimen name="app_card_elevation">4dp</dimen>
+
+    <!-- 卡片高度与宽度 -->
+
+    <dimen name="app_card_height">255dp</dimen>
+
+    <dimen name="app_card_width">0dp</dimen>
+
+    <!-- 倒影尺寸 -->
+    <dimen name="reflection_height">35dp</dimen>
+    <dimen name="reflection_icon_size">60dp</dimen>
+
+    <!-- 间距尺寸 -->
+    <dimen name="margin_between_cards">12dp</dimen>
+    <dimen name="margin_between_btns">6dp</dimen>
+    <dimen name="gap_between_card_and_reflection">2dp</dimen>
+    <dimen name="function_btn_height">120dp</dimen>
+</resources>

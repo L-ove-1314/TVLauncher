@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_blue">#0055FF</color>
+    <!-- 卡片背景 -->
+    <color name="card_netflix_bg">#000000</color>
+    <color name="card_youtube_bg">#3E3E3E</color>
+    <color name="card_play_bg">#8BC34A</color>
+    <color name="card_chrome_bg">#9C27B0</color>
+    <!-- 按钮背景 -->
+    <color name="btn_bg">#2196F3</color>
+    <color name="btn_bg_focused">#42A5F5</color>
+    <!-- 文本 -->
+    <color name="text_white">#FFFFFF</color>
+    <!-- 边框 -->
+    <color name="border_focused">#FFFFFF</color>
+    <color name="btn_top_color">#42A5F5</color>
+    <color name="btn_bottom_color">#1E88E5</color>
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 底部功能按钮渐变圆角背景 -->
+    <corners android:radius="12dp" />
+    <gradient
+        android:startColor="@color/btn_top_color"
+        android:endColor="@color/btn_bottom_color"
+        android:angle="90" />
+</shape>

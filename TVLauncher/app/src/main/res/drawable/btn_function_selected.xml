@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 底部功能按钮焦点状态背景（白色描边 + 蓝色渐变填充） -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <corners android:radius="12dp" />
+            <stroke android:width="3dp" android:color="#FFFFFF" />
+            <solid android:color="@android:color/transparent" />
+        </shape>
+    </item>
+
+    <item
+        android:bottom="3dp"
+        android:top="3dp"
+        android:left="3dp"
+        android:right="3dp">
+        <shape>
+            <corners android:radius="12dp" />
+            <gradient
+                android:startColor="#42A5F5"
+                android:endColor="#1E88E5"
+                android:angle="90" />
+        </shape>
+    </item>
+</layer-list>

@@ -1,0 +1,7 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 顶部渐隐遮罩背景 -->
+    <gradient
+        android:angle="270"
+        android:startColor="#0F1A2F"
+        android:endColor="#000F1A2F" />
+</shape>
