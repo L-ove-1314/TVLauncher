@@ -7,21 +7,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tvlauncher.R;
 import com.example.tvlauncher.data.model.AppInfo;
 
-import java.util.List;
+public class AppAdapter extends ListAdapter<AppInfo, AppAdapter.ViewHolder> {
 
-public class AppAdapter extends RecyclerView.Adapter<AppAdapter.ViewHolder> {
-
-    private List<AppInfo> apps;
-    private RecyclerView recyclerView;
-
-    public AppAdapter(List<AppInfo> apps, RecyclerView recyclerView) {
-        this.apps = apps;
-        this.recyclerView = recyclerView;
+    public AppAdapter() {
+        super(DIFF_CALLBACK);
     }
 
     @Override
@@ -33,11 +29,10 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        AppInfo app = apps.get(position);
+        AppInfo app = getItem(position);
         holder.icon.setImageDrawable(app.icon);
         holder.label.setText(app.label);
 
-        // 点击启动应用
         holder.itemView.setOnClickListener(v -> {
             try {
                 Intent launchIntent = v.getContext().getPackageManager()
@@ -45,19 +40,20 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.ViewHolder> {
                 if (launchIntent != null) v.getContext().startActivity(launchIntent);
             } catch (Exception ignored) {}
         });
-
-        // 焦点自动居中滚动
-        holder.itemView.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus && recyclerView != null) {
-                recyclerView.smoothScrollToPosition(position);
-            }
-        });
     }
 
-    @Override
-    public int getItemCount() {
-        return apps != null ? apps.size() : 0;
-    }
+    private static final DiffUtil.ItemCallback<AppInfo> DIFF_CALLBACK =
+            new DiffUtil.ItemCallback<AppInfo>() {
+                @Override
+                public boolean areItemsTheSame(AppInfo oldItem, AppInfo newItem) {
+                    return oldItem.packageName.equals(newItem.packageName);
+                }
+
+                @Override
+                public boolean areContentsTheSame(AppInfo oldItem, AppInfo newItem) {
+                    return oldItem.label.equals(newItem.label);
+                }
+            };
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView icon;
@@ -69,7 +65,6 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.ViewHolder> {
             label = itemView.findViewById(R.id.tv_app_name);
             itemView.setFocusable(true);
             itemView.setClickable(true);
-            itemView.setFocusableInTouchMode(true);
         }
     }
 }
