@@ -35,6 +35,12 @@ android {
     }
 }
 
+// 消除过时 API 和未检查操作的 Lint 警告（Kotlin DSL 写法）
+tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs.add("-Xlint:-deprecation")
+    options.compilerArgs.add("-Xlint:-unchecked")
+}
+
 dependencies {
     implementation(libs.activity.ktx)
     implementation(libs.appcompat)
