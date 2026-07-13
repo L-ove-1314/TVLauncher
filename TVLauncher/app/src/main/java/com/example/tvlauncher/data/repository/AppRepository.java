@@ -8,12 +8,10 @@ import android.content.pm.ResolveInfo;
 import com.example.tvlauncher.data.model.AppInfo;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
- * 应用数据仓库：封装 PackageManager 查询，负责获取所有已安装的可启动应用
- * 不持有 Activity Context，使用 ApplicationContext 避免内存泄漏
+ * 应用数据仓库，封装 PackageManager 查询
  */
 public class AppRepository {
 
@@ -21,7 +19,6 @@ public class AppRepository {
     private final Context appContext;
 
     private AppRepository(Context context) {
-        // 使用 ApplicationContext，生命周期跟随应用
         this.appContext = context.getApplicationContext();
     }
 
@@ -32,10 +29,7 @@ public class AppRepository {
         return instance;
     }
 
-    /**
-     * 同步获取已安装的可启动应用列表（过滤自身、按名称排序）
-     * 注意：此方法包含 I/O 操作，应在后台线程调用
-     */
+    // 获取已安装应用列表（需在后台线程调用）
     public List<AppInfo> getInstalledApps() {
         PackageManager pm = appContext.getPackageManager();
         Intent mainIntent = new Intent(Intent.ACTION_MAIN);
@@ -46,6 +40,8 @@ public class AppRepository {
         String selfPackage = appContext.getPackageName();
 
         for (ResolveInfo info : resolveInfos) {
+            if (info == null || info.activityInfo == null) continue;
+
             String packageName = info.activityInfo.packageName;
             if (selfPackage.equals(packageName)) continue;
 
@@ -56,7 +52,7 @@ public class AppRepository {
             ));
         }
 
-        Collections.sort(apps, (a, b) -> a.label.compareToIgnoreCase(b.label));
+        apps.sort((a, b) -> a.label.compareToIgnoreCase(b.label));
         return apps;
     }
 }

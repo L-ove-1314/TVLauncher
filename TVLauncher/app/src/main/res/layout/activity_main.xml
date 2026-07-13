@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#0000FF"
@@ -9,7 +10,6 @@
     android:paddingEnd="90dp"
     android:paddingTop="30dp"
     android:paddingBottom="30dp"
-
     android:clipChildren="false"
     android:clipToPadding="false">
 
@@ -21,7 +21,6 @@
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingBottom="5dp"
-
         android:clipChildren="false"
         android:clipToPadding="false">
 
@@ -40,6 +39,7 @@
             android:focusable="true"
             android:padding="4dp"
             android:src="@drawable/ic_usb"
+            android:contentDescription="@null"
             app:tint="#FFFFFF" />
 
         <ImageView
@@ -52,6 +52,7 @@
             android:focusable="true"
             android:padding="4dp"
             android:src="@drawable/ic_wifi_on"
+            android:contentDescription="@null"
             app:tint="#FFFFFF" />
 
         <TextView
@@ -59,18 +60,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="12dp"
-            android:text="8:08 AM"
             android:textColor="#FFFFFF"
-            android:textSize="@dimen/text_size_status_time"/>
+            android:textSize="@dimen/text_size_status_time"
+            tools:text="8:08 AM" />
+
         <TextView
             android:id="@+id/tv_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Saturday, November 11"
             android:textColor="#FFFFFF"
-            android:textSize="@dimen/text_size_status_date" />
+            android:textSize="@dimen/text_size_status_date"
+            tools:text="Saturday, November 11" />
     </LinearLayout>
-
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -79,9 +80,9 @@
         android:gravity="center_vertical"
         android:paddingBottom="5dp"
         android:layout_marginTop="30dp"
-
         android:clipChildren="false"
-        android:clipToPadding="false">
+        android:clipToPadding="false"
+        android:baselineAligned="false">
 
         <include
             android:id="@+id/card_netflix"
@@ -115,7 +116,6 @@
             android:layout_weight="1" />
     </LinearLayout>
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -123,9 +123,9 @@
         android:gravity="center_vertical"
         android:paddingBottom="5dp"
         android:layout_marginTop="20dp"
-
         android:clipChildren="false"
-        android:clipToPadding="false">
+        android:clipToPadding="false"
+        android:baselineAligned="false">
 
         <include
             android:id="@+id/btn_keystone"

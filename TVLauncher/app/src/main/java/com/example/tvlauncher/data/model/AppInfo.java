@@ -3,7 +3,7 @@ package com.example.tvlauncher.data.model;
 import android.graphics.drawable.Drawable;
 
 /**
- * 应用信息实体类（纯数据，不依赖任何 Android 组件）
+ * 应用信息实体类
  */
 public class AppInfo {
     public String packageName;

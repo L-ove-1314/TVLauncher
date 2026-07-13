@@ -7,11 +7,11 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 
 /**
- * 生命周期感知的网络状态 LiveData
- * 当有活跃观察者时自动注册监听，无观察者时自动注销
+ * 网络状态 LiveData，生命周期感知
  */
 public class NetworkStateLiveData extends LiveData<Boolean> {
 
@@ -50,12 +50,12 @@ public class NetworkStateLiveData extends LiveData<Boolean> {
 
         callback = new ConnectivityManager.NetworkCallback() {
             @Override
-            public void onAvailable(Network network) {
+            public void onAvailable(@NonNull Network network) {
                 postValue(true);  // WiFi 已连接
             }
 
             @Override
-            public void onLost(Network network) {
+            public void onLost(@NonNull Network network) {
                 postValue(false); // WiFi 已断开
             }
         };

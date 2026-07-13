@@ -1,6 +1,9 @@
 package com.example.tvlauncher;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -10,13 +13,13 @@ import android.graphics.PixelFormat;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -24,44 +27,43 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 
+import com.example.tvlauncher.base.BaseActivity;
 import com.example.tvlauncher.data.livedata.NetworkStateLiveData;
 import com.example.tvlauncher.utils.LifecycleClockManager;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
+    // 控件声明
     private TextView tvTime, tvDate;
     private CardView cardNetflix, cardYoutube, cardPlay, cardChrome;
     private CardView btnKeystone, btnMiracast, btnSignalSource, btnMyApps, btnSettings;
     private ImageView ivUsb, ivWifi;
 
+    // 焦点边框
     private Paint focusBorderPaint;
     private float BORDER_WIDTH;
     private float BORDER_RADIUS;
 
+    // USB 监听
+    private BroadcastReceiver usbReceiver;
+
+    // 生命周期
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // 全屏沉浸式
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
-                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-                        View.SYSTEM_UI_FLAG_FULLSCREEN);
+        setFullScreen();
 
         initViews();
         setupUI();
         setupFocusControls();
 
-        // 时钟
         getLifecycle().addObserver(new LifecycleClockManager(tvTime, tvDate));
 
-        // WiFi 状态
         NetworkStateLiveData wifiState = new NetworkStateLiveData(getApplication());
         wifiState.observe(this, isConnected -> {
             if (isConnected) {
@@ -75,8 +77,8 @@ public class MainActivity extends AppCompatActivity {
 
         initFocusBorderPaint();
         addFocusBorderToAllViews();
+        registerUsbReceiver();
 
-        // 返回键
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -85,6 +87,15 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (usbReceiver != null) {
+            unregisterReceiver(usbReceiver);
+        }
+    }
+
+    // 视图绑定
     private void initViews() {
         tvTime = findViewById(R.id.tv_time);
         tvDate = findViewById(R.id.tv_date);
@@ -109,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
         ivWifi = findViewById(R.id.ic_wifi);
     }
 
+    // UI 设置
     private void setupUI() {
         int netflixColor = getColor(R.color.card_netflix_bg);
         int youtubeColor = getColor(R.color.card_youtube_bg);
@@ -132,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
         setBtnIcon(btnSettings, R.drawable.settings, "Settings");
     }
 
+    // 卡片数据
     private void setCardData(CardView card, int drawableId, String name, int bgColor) {
         ImageView icon = card.findViewById(R.id.iv_app_icon);
         icon.setImageResource(drawableId);
@@ -155,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
         gradientView.setBackground(gradient);
     }
 
+    // 按钮图标
     private void setBtnIcon(CardView btn, int drawableId, String name) {
         ImageView icon = btn.findViewById(R.id.btn_icon);
         TextView nameView = btn.findViewById(R.id.btn_name);
@@ -162,6 +176,7 @@ public class MainActivity extends AppCompatActivity {
         nameView.setText(name);
     }
 
+    // 焦点控制
     private void setupFocusControls() {
         setChildrenNotFocusable(cardNetflix);
         setChildrenNotFocusable(cardYoutube);
@@ -183,7 +198,6 @@ public class MainActivity extends AppCompatActivity {
         btnMyApps.setFocusable(true);
         btnSettings.setFocusable(true);
 
-        // 焦点导航
         cardNetflix.setNextFocusDownId(R.id.btn_keystone);
         cardYoutube.setNextFocusDownId(R.id.btn_miracast);
         cardPlay.setNextFocusDownId(R.id.btn_signal_source);
@@ -210,7 +224,6 @@ public class MainActivity extends AppCompatActivity {
         btnMyApps.setNextFocusRightId(R.id.btn_settings);
         btnSettings.setNextFocusLeftId(R.id.btn_my_apps);
 
-        // 顶部图标
         ivUsb.setFocusable(true);
         ivUsb.setClickable(true);
         ivWifi.setFocusable(true);
@@ -223,6 +236,7 @@ public class MainActivity extends AppCompatActivity {
         ivUsb.setNextFocusRightId(R.id.ic_wifi);
         ivWifi.setNextFocusLeftId(R.id.ic_usb);
 
+        // 点击事件
         ivUsb.setOnClickListener(v -> {
             Intent fileIntent = new Intent(Intent.ACTION_VIEW);
             fileIntent.setDataAndType(Uri.parse("/storage"), "resource/folder");
@@ -238,16 +252,10 @@ public class MainActivity extends AppCompatActivity {
 
         btnSettings.requestFocus();
 
-        // 底部按钮
         btnSettings.setOnClickListener(v -> startActivity(new Intent(Settings.ACTION_SETTINGS)));
         btnMyApps.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, AllAppsActivity.class)));
 
-        // Keystone：厂商接口预留
-        btnKeystone.setOnClickListener(v -> {
-            Toast.makeText(this, "该设备暂不支持", Toast.LENGTH_SHORT).show();
-        });
-
-        // Miracast：无线投屏
+        btnKeystone.setOnClickListener(v -> Toast.makeText(this, "该设备暂不支持", Toast.LENGTH_SHORT).show());
         btnMiracast.setOnClickListener(v -> {
             try {
                 startActivity(new Intent("android.settings.WIFI_DISPLAY_SETTINGS"));
@@ -255,13 +263,8 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "该设备暂不支持", Toast.LENGTH_SHORT).show();
             }
         });
+        btnSignalSource.setOnClickListener(v -> Toast.makeText(this, "该设备暂不支持", Toast.LENGTH_SHORT).show());
 
-        // Signal Source：厂商接口预留
-        btnSignalSource.setOnClickListener(v -> {
-            Toast.makeText(this, "该设备暂不支持", Toast.LENGTH_SHORT).show();
-        });
-
-        // 四个应用卡片
         cardNetflix.setOnClickListener(v -> launchAppRobust(
                 new String[]{"com.netflix.ninja", "com.netflix.mediaclient"}, "https://www.netflix.com"));
         cardYoutube.setOnClickListener(v -> launchAppRobust(
@@ -272,6 +275,7 @@ public class MainActivity extends AppCompatActivity {
                 new String[]{"com.android.chrome"}, "https://www.google.com"));
     }
 
+    // 应用启动
     private void launchAppRobust(String[] packageNames, String fallbackUrl) {
         for (String pkg : packageNames) {
             Intent intent = getPackageManager().getLaunchIntentForPackage(pkg);
@@ -284,6 +288,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // 禁止子控件抢焦点
     private void setChildrenNotFocusable(View view) {
         if (view instanceof ViewGroup) {
             ViewGroup group = (ViewGroup) view;
@@ -293,6 +298,7 @@ public class MainActivity extends AppCompatActivity {
         view.setClickable(false);
     }
 
+    // 焦点边框绘制
     private void initFocusBorderPaint() {
         BORDER_WIDTH = 2 * getResources().getDisplayMetrics().density;
         BORDER_RADIUS = 16 * getResources().getDisplayMetrics().density;
@@ -318,7 +324,7 @@ public class MainActivity extends AppCompatActivity {
                     .setInterpolator(new DecelerateInterpolator()).start();
         });
         view.setForeground(new Drawable() {
-            @Override public void draw(Canvas canvas) {
+            @Override public void draw(@NonNull Canvas canvas) {
                 if (view.isFocused()) {
                     RectF borderRect = new RectF(BORDER_WIDTH / 2, BORDER_WIDTH / 2,
                             view.getWidth() - BORDER_WIDTH / 2, view.getHeight() - BORDER_WIDTH / 2);
@@ -331,6 +337,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // 全局按键
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_BUTTON_Y) {
@@ -340,5 +347,24 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    // USB 插拔监听
+    private void registerUsbReceiver() {
+        usbReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(@NonNull Context context, @NonNull Intent intent) {
+                if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(intent.getAction())) {
+                    ivUsb.setVisibility(View.VISIBLE);
+                } else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(intent.getAction())) {
+                    ivUsb.setVisibility(View.GONE);
+                }
+            }
+        };
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
+        registerReceiver(usbReceiver, filter);
+        ivUsb.setVisibility(View.GONE);
     }
 }

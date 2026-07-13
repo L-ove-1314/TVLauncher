@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- 网络状态权限，用于监听 WiFi 连接变化 -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- 声明需要查询的应用 -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+    </queries>
 
     <application
         android:icon="@mipmap/ic_launcher"
@@ -14,9 +22,9 @@
             android:launchMode="singleTask"
             android:clearTaskOnLaunch="true"
             android:stateNotNeeded="true"
-            android:screenOrientation="landscape"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:exported="true">
+            android:exported="true"
+            tools:ignore="LockedOrientationActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,8 +36,8 @@
 
         <activity
             android:name=".AllAppsActivity"
-            android:screenOrientation="landscape"
             android:theme="@style/Theme.TVLauncher"
-            android:exported="false" />
+            android:exported="false"
+            tools:ignore="LockedOrientationActivity" />
     </application>
 </manifest>

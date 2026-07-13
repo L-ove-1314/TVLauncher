@@ -4,16 +4,12 @@ plugins {
 
 android {
     namespace = "com.example.tvlauncher"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.example.tvlauncher"
         minSdk = 28
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
 
@@ -33,9 +29,14 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
+    // 忽略强制横屏的 Lint 检查
+    lint {
+        disable += "LockedOrientationActivity"
+    }
 }
 
-// 消除过时 API 和未检查操作的 Lint 警告（Kotlin DSL 写法）
+// 屏蔽弃用 API 和未检查操作的编译警告
 tasks.withType<JavaCompile>().configureEach {
     options.compilerArgs.add("-Xlint:-deprecation")
     options.compilerArgs.add("-Xlint:-unchecked")

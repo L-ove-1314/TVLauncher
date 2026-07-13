@@ -2,10 +2,15 @@ package com.example.tvlauncher.base;
 
 import android.view.View;
 import android.view.WindowManager;
+
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * 基础 Activity，提供全屏方法
+ */
 public class BaseActivity extends AppCompatActivity {
 
+    // 全屏设置
     protected void setFullScreen() {
         getWindow().setFlags(
                 WindowManager.LayoutParams.FLAG_FULLSCREEN,

@@ -8,8 +8,6 @@ import java.util.concurrent.Executors;
 
 /**
  * 全局线程池管理器
- * diskIO：用于磁盘读写、PackageManager 查询等 I/O 密集型任务
- * mainThread：用于切回主线程更新 UI
  */
 public class AppExecutors {
 
@@ -23,17 +21,25 @@ public class AppExecutors {
         this.mainHandler = new Handler(Looper.getMainLooper());
     }
 
+    // 双重检查锁获取单例
     public static AppExecutors getInstance() {
         if (instance == null) {
-            instance = new AppExecutors();
+            synchronized (AppExecutors.class) {
+                if (instance == null) {
+                    instance = new AppExecutors();
+                }
+            }
         }
         return instance;
     }
 
+    // 后台 I/O 任务
     public void executeDiskIO(Runnable runnable) {
         diskIO.execute(runnable);
     }
 
+    // 主线程任务
+    @SuppressWarnings("unused")
     public void executeMainThread(Runnable runnable) {
         mainHandler.post(runnable);
     }

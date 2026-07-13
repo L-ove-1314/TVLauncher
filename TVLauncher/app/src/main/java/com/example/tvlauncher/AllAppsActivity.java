@@ -2,37 +2,29 @@ package com.example.tvlauncher;
 
 import android.os.Bundle;
 import android.view.View;
-import android.view.WindowManager;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.tvlauncher.base.BaseActivity;
 import com.example.tvlauncher.ui.allapps.AppAdapter;
 import com.example.tvlauncher.ui.allapps.AppListViewModel;
 
-public class AllAppsActivity extends AppCompatActivity {
+public class AllAppsActivity extends BaseActivity {
 
+    // 控件
     private RecyclerView recyclerView;
     private AppAdapter adapter;
 
+    // 生命周期
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_apps);
-
-        getWindow().setFlags(
-                WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN
-        );
-        getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-        );
+        setFullScreen();
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
@@ -45,7 +37,7 @@ public class AllAppsActivity extends AppCompatActivity {
         GridLayoutManager layoutManager = new GridLayoutManager(this, 5);
         recyclerView.setLayoutManager(layoutManager);
 
-        // 焦点自动居中（一行搞定）
+        // 焦点自动居中
         LinearSnapHelper snapHelper = new LinearSnapHelper();
         snapHelper.attachToRecyclerView(recyclerView);
 
