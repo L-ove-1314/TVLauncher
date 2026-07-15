@@ -13,7 +13,6 @@ import android.graphics.PixelFormat;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -34,6 +33,8 @@ import androidx.core.content.ContextCompat;
 import com.example.tvlauncher.base.BaseActivity;
 import com.example.tvlauncher.data.livedata.NetworkStateLiveData;
 import com.example.tvlauncher.utils.LifecycleClockManager;
+
+import java.io.File;
 
 public class MainActivity extends BaseActivity {
 
@@ -349,22 +350,33 @@ public class MainActivity extends BaseActivity {
         return super.onKeyDown(keyCode, event);
     }
 
-    // USB 插拔监听
+    // USB 插拔监听（媒体挂载广播）
     private void registerUsbReceiver() {
         usbReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(@NonNull Context context, @NonNull Intent intent) {
-                if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(intent.getAction())) {
+                String action = intent.getAction();
+                if (Intent.ACTION_MEDIA_MOUNTED.equals(action)) {
                     ivUsb.setVisibility(View.VISIBLE);
-                } else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(intent.getAction())) {
+                } else if (Intent.ACTION_MEDIA_UNMOUNTED.equals(action)
+                        || Intent.ACTION_MEDIA_REMOVED.equals(action)) {
                     ivUsb.setVisibility(View.GONE);
                 }
             }
         };
         IntentFilter filter = new IntentFilter();
-        filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
-        filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
+        filter.addAction(Intent.ACTION_MEDIA_MOUNTED);
+        filter.addAction(Intent.ACTION_MEDIA_UNMOUNTED);
+        filter.addAction(Intent.ACTION_MEDIA_REMOVED);
+        filter.addDataScheme("file");
         registerReceiver(usbReceiver, filter);
-        ivUsb.setVisibility(View.GONE);
+
+        ivUsb.setVisibility(externalStorageExists() ? View.VISIBLE : View.GONE);
+    }
+
+    // 检查是否有外部存储
+    private boolean externalStorageExists() {
+        File[] dirs = getExternalFilesDirs(null);
+        return dirs != null && dirs.length > 1;
     }
 }
