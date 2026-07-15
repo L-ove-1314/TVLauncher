@@ -15,7 +15,8 @@ import java.util.List;
  */
 public class AppRepository {
 
-    private static AppRepository instance;
+    // 单例
+    private static volatile AppRepository instance;
     private final Context appContext;
 
     private AppRepository(Context context) {
